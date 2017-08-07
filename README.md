@@ -36,7 +36,7 @@ With OOTB Support Tools addon for Community Edition, it is possible to extract u
 - SOLR Health
 - SOLR indices size (for any core)
 
-![Nagios Alfresco](screenshots/OOTB-monitor.png)
+![Nagios Alfresco](images/OOTB-monitor.png)
 
 ## Nagios Icinga configuration
 
