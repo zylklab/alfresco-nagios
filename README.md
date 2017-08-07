@@ -12,17 +12,21 @@ The most interesting information of this plugin is for Enterprise Edition (EE), 
 - check_http for direct monitorization of http(s) service (like 80 or 443)
 - check_tcp for checking Tomcat and Alfresco ports (like 8009, 8080, 8443 or 50500)
 
-Additionally you may use other common plugins depending on your monitorization strategy:
+Additionally you may use other Nagios common plugins depending on your monitorization strategy:
 - check_snmp for checking CPU, RAM, Load & Swap (via standard SNMP protocol) if using SNMP protocol
 - check_esxi for checking CPU, RAM, Load from VMware API point of view (if your instance is virtualized)
 
-Also an important thing to monitor in Alfresco is related to disk sizes (and inodes) for contentstore, Tomcat temp, Alfresco logs, Solr indices, and Solr backup indices.. and processes like Libreoffice too. 
+Also an important thing to monitor in Alfresco server is related to disk sizes (and inodes) for contentstores, Tomcat temp, Alfresco logs, Solr indices, and Solr backup indices.. and also processes like Libreoffice too. 
 
-And finally other plugins may be useful depending on your Alfresco stack:
+Finally other plugins may be useful depending on your Alfresco stack:
 - check_tomcat for monitoring threads and JVM 
 - check_mysql for monitoring your database pool connections (in case of Mysql)
  
-With OOTB Support Tools addon for Community Edition, it is possible to extract useful the last useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs. We can use the JSON information from the available webscripts:
+## OOTB Support Tools helper for monitoring
+
+![Nagios Alfresco](images/OOTB-monitor.png)
+ 
+With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
 
 - JVM Used Memory
 - Number of Threads
@@ -36,11 +40,9 @@ With OOTB Support Tools addon for Community Edition, it is possible to extract u
 - SOLR Health
 - SOLR indices size (for any core)
 
-![Nagios Alfresco](images/OOTB-monitor.png)
-
 ## Nagios Icinga configuration
 
-Files involved in Nagios/Icinga config
+Files involved in Nagios/Icinga config:
 
 - hosts.cfg (Alfresco host definition)
 - ootb-commands.cfg (OOTB curl commands)
@@ -54,11 +56,13 @@ By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
 - check_ootb_performance_stats.sh
 - check_ootb_solr.sh
 
-For using this plugin you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
+For using this setup you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
 
 ```
 $ sudo apt-get install curl jshon
 ```
+
+If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
 
 ## Alfresco Config
 
