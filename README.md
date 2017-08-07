@@ -1,4 +1,6 @@
-# Alfresco Nagios plugin for Alfresco Community
+# Nagios setup for Alfresco Community
+
+## Intro
 
 A well known example for Alfresco monitoring is available: 
 
@@ -6,16 +8,21 @@ https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin
 
 The most interesting information of this plugin is for Enterprise Edition (EE), although general direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. For example:
 
+- check_ssh for direct monitorization of ssh port
 - check_http for direct monitorization of http(s) service (like 80 or 443)
 - check_tcp for checking Tomcat and Alfresco ports (like 8009, 8080, 8443 or 50500)
-- check_snmp for checking CPU, RAM, Load & Swap (via standard SNMP protocol)
-- check_esxi for checking CPU, RAM, Load from VMware API point of view (if your instance is virtualized) 
+
+Additionally you may use other common plugins depending on your monitorization strategy:
+- check_snmp for checking CPU, RAM, Load & Swap (via standard SNMP protocol) if using SNMP protocol
+- check_esxi for checking CPU, RAM, Load from VMware API point of view (if your instance is virtualized)
+
+Also an important thing to monitor in Alfresco is related to disk sizes (and inodes) for contentstore, Tomcat temp, Alfresco logs, Solr indices, and Solr backup indices.. and processes like Libreoffice too. 
+
+And finally other plugins may be useful depending on your Alfresco stack:
 - check_tomcat for monitoring threads and JVM 
-- check_mysql for monitoring your database pool connections
-
-Other important thing to monitor in Alfresco are your disk sizes (and inodes) and processes like Libreoffice. 
-
-With OOTB Support Tools addon for Community Edition, it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs. We can use the JSON information from the available webscripts:
+- check_mysql for monitoring your database pool connections (in case of Mysql)
+ 
+With OOTB Support Tools addon for Community Edition, it is possible to extract useful the last useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs. We can use the JSON information from the available webscripts:
 
 - JVM Used Memory
 - Number of Threads
@@ -29,11 +36,13 @@ With OOTB Support Tools addon for Community Edition, it is possible to extract u
 - SOLR Health
 - SOLR indices size (for any core)
 
+![Nagios Alfresco](screenshots/OOTB-monitor.png)
+
 ## Nagios Icinga configuration
 
 Files involved in Nagios/Icinga config
 
-- hosts.cfg (Alfresco host)
+- hosts.cfg (Alfresco host definition)
 - ootb-commands.cfg (OOTB curl commands)
 - services_ootb.cfg (Alfresco services - non NRPE)
 - nrpe_ootb.cfg (Alfresco services - only if NRPE)
@@ -45,17 +54,17 @@ By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
 - check_ootb_performance_stats.sh
 - check_ootb_solr.sh
 
-For using this plugin you need some dependencies like curl and jshon. In Ubuntu 16.04 LTS, for example:
+For using this plugin you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
 
 ```
-$ sudo aptitude install curl jshon
+$ sudo apt-get install curl jshon
 ```
 
 ## Alfresco Config
 
-Mainly, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol. 
+Mainly, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer).
 
-## Tested
+## Tested on
 
 - Alfresco 2017XXGA
 - OOTB Support Tools Addon >0.1
