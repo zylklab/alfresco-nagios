@@ -1,6 +1,6 @@
 # Nagios setup for Alfresco Community
 
-## Intro
+## Introduction
 
 A well known example for Alfresco monitoring is available: 
 
@@ -64,7 +64,7 @@ $ sudo apt-get install curl jshon
 
 If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
 
-## Alfresco Config
+## Alfresco configuration
 
 Mainly, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer).
 
