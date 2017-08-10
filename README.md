@@ -21,7 +21,8 @@ Also an important thing to monitor in Alfresco server is related to disk sizes (
 Finally other plugins may be useful depending on your Alfresco stack:
 - check_tomcat for monitoring threads and JVM 
 - check_mysql for monitoring your database pool connections (in case of Mysql)
- 
+- check_jmx for monitoring JMX variables  
+
 ## OOTB Support Tools helper for monitoring
 
 ![Nagios Alfresco](images/OOTB-monitor.png)
@@ -40,12 +41,16 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 - SOLR Health
 - SOLR indices size (for any core)
 
-## Nagios Icinga configuration
+## JMX information
+
+With JMXProxy servlet you may obtain JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info is obtained from OOTB Support Tools webscript too, but other important parameters from Operating Sysstem or Garbage Collector may be collected via JMX. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. 
+
+## Nagios-Icinga configuration
 
 Files involved in Nagios/Icinga config:
 
 - hosts.cfg (Alfresco host definition)
-- ootb-commands.cfg (OOTB curl commands)
+- ootb-commands.cfg (curl commands)
 - services_ootb.cfg (Alfresco services - non NRPE)
 - nrpe_ootb.cfg (Alfresco services - only if NRPE)
 - nrpe.cfg (For nrpe-server - only if NRPE)
@@ -55,6 +60,7 @@ By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
 - check_ootb_active_sessions.sh
 - check_ootb_performance_stats.sh
 - check_ootb_solr.sh
+- check_manager_jmxproxy.sh (only for JMX monitoring)
 
 For using this setup you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
 
@@ -66,7 +72,39 @@ If you plan to use NRPE config, you need to configure your Alfresco Server as a 
 
 ## Alfresco configuration
 
-Mainly, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer).
+Mainly, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). Previously you need to install OOTB Support Tools addon in your Alfresco server.
+
+### Enabling JMXProxy servlet
+
+If you use the default installer in Alfresco, the Tomcat manager application is deployed under webapps directory. You may enable JMXProxy servlet for monitoring JMX variables in Alfresco Community: 
+
+- Create $ALF_HOME/tomcat/conf/Catalina/localhost/manager.xml
+
+```
+<Context antiResourceLocking="false" privileged="true" useHttpOnly="true" 
+override="true">
+  <Valve className="org.apache.catalina.authenticator.BasicAuthenticator" securePagesWithPragma="false" 
+/>
+</Context>
+
+```
+
+- Edit credentials and roles for manager user at $ALF_HOME/tomcat/conf/tomcat-users.xml
+
+```
+<tomcat-users>
+  <user username="CN=Alfresco Repository Client, OU=Unknown, O=Alfresco Software Ltd., L=Maidenhead, ST=UK, C=GB" roles="repoclient" password="null"/>
+  <user username="CN=Alfresco Repository, OU=Unknown, O=Alfresco Software Ltd., L=Maidenhead, ST=UK, C=GB" roles="repository" password="null"/>
+  <role rolename="manager-jmx"/>
+  <user username="monitor" password="secret" roles="manager-jmx"/>
+</tomcat-users>
+```
+
+Finally you need to restart Alfresco service. And for checking it you can type:
+
+```
+curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
+```
 
 ## Tested on
 
@@ -84,3 +122,4 @@ Mainly, you need to create a dedicated user for Alfresco Monitoring, for example
 - http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon
 - http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools
 - https://github.com/OrderOfTheBee/ootbee-support-tools
+
