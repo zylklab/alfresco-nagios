@@ -2,11 +2,7 @@
 
 ## Introduction
 
-A well known example for Alfresco monitoring via JMX is available: 
-
-https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin
-
-But the most interesting information of this plugin is for Enterprise Edition (EE), although general direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. For example:
+A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin) but the most interesting information of this plugin is for Enterprise Edition (EE), although general direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. For example:
 
 - check_ssh for direct monitorization of ssh port
 - check_http for direct monitorization of http(s) service (like 80 or 443)
@@ -120,7 +116,7 @@ curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:ty
 
 - [Alfresco Nagios Setup for Alfresco Enterprise](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin)
 - [OOTB Support Tools](https://github.com/OrderOfTheBee/ootbee-support-tools)
-- [Using_the_JMX_Proxy_Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet)
+- [Using the JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet)
 - [Jolokia tutorial](https://jolokia.org/tutorial.html)
 - [Blog Post - Monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon)
 - [Blog Post - More on monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools)
