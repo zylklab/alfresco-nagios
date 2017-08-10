@@ -119,7 +119,7 @@ curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:ty
 ## Links
 
 - https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin
-- http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon
-- http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools
 - https://github.com/OrderOfTheBee/ootbee-support-tools
 - https://jolokia.org/tutorial.html
+- http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon
+- http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools
