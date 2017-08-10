@@ -118,8 +118,9 @@ curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:ty
 
 ## Links
 
-- https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin
-- https://github.com/OrderOfTheBee/ootbee-support-tools
-- https://jolokia.org/tutorial.html
-- http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon
-- http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools
+- [Alfresco Nagios Setup for Alfresco Enterprise](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin)
+- [OOTB Support Tools](https://github.com/OrderOfTheBee/ootbee-support-tools)
+- [Using_the_JMX_Proxy_Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet)
+- [Jolokia tutorial](https://jolokia.org/tutorial.html)
+- [Blog Post - Monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon)
+- [Blog Post - More on monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools)
