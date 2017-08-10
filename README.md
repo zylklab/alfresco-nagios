@@ -25,7 +25,7 @@ Finally other plugins may be useful depending on your Alfresco stack:
 
 ### OOTB Support Tools helper for monitoring
 
-![Nagios Alfresco](images/OOTB-monitor.png)
+![Nagios Alfresco](images/alfresco-nagios.png)
  
 With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
 
