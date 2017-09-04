@@ -101,6 +101,38 @@ Finally you need to restart Alfresco service. And for checking it you can type:
 ```
 curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
 ```
+## Using Dockerfile
+
+You can check this basic Nagios/Icinga setup using Docker.
+
+0. Clone this project
+```
+git clone https://github.com/zylklab/alfresco-nagios
+cd alfresco-nagios
+```
+
+1. Configure Alfresco admin credentials, host, address, and JMXProxy manager credentials in Dockerfile according to your Alfresco repository target to monitor
+
+```
+ENV ALF_USER admin
+ENV ALF_PASS s3cret
+ENV ALF_HOST planetexpress.zylk.net
+ENV ALF_ADDR 127.0.0.1
+ENV ALF_PORT 8080 
+ENV JMX_USER manager
+ENV JMX_PASS s3cret
+```
+
+2. Run docker commands
+
+```
+sudo docker build . -t zylklab/icingalf
+sudo docker run -i -t zylklab/icingalf
+```
+
+3. Connect to http://172.17.0.2/icinga/
+
+Note: Take into consideration that email alerts are not configured. You should configure postfix and Icinga/Nagios contacts.
 
 ## Tested on
 
