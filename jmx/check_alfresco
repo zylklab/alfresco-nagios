@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Alfresco for Nagios JMX plugin.
+#
+
+JAVA_CMD=`which java`
+
+if [ -z $JAVA_CMD ]
+then
+
+ if [ -x $JAVA_HOME/bin/java ]
+ then
+   JAVA_CMD=$JAVA_HOME/bin/java
+ else
+   echo JMX CRITICAL - java not found.
+   exit 2
+ fi
+
+fi
+
+DIR=`dirname $0`
+JMX=`$JAVA_CMD -cp $DIR/check_alfresco.jar org.nagios.JMXQuery "$@"`
+JMXVAL=$?
+#VAL=`echo $JMX | awk '{print $5}'`
+VALUE=`echo $JMX | awk '{print $NF}'`
+#echo $JMX "|$6=$VALUE;;;"
+echo $JMX "|$VALUE;;;"
+exit $JMXVAL
+
+
