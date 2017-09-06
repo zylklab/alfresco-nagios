@@ -37,18 +37,18 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 - SOLR Health
 - SOLR indices size (for any core)
 
-### JMX information
+### JMX information in Alfresco Community
 
 With JMXProxy servlet, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
 
-## Nagios-Icinga configuration
+## Nagios-Icinga configuration for Alfresco CE
 
 The files involved in Nagios/Icinga configuration are the following:
 
-- hosts.cfg (Alfresco host definition)
-- ootb-commands.cfg (Nagios commands)
-- services_ootb.cfg (Non NRPE services)
-- nrpe_ootb.cfg (NRPE services)
+- hosts-alfresco.cfg (Alfresco hosts definition)
+- commands-ootb.cfg (Nagios commands)
+- services-ootb.cfg (Non NRPE services)
+- nrpe-ootb.cfg (NRPE services)
 - nrpe.cfg (For nrpe-server - only if NRPE)
 
 By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
@@ -66,7 +66,7 @@ $ sudo apt-get install curl jshon
 
 Note: If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
 
-## Alfresco configuration
+### Alfresco CE configuration
 
 For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). Previously you need to install OOTB Support Tools addon in your Alfresco server.
 
@@ -101,9 +101,10 @@ Finally you need to restart Alfresco service. And for checking it you can type:
 ```
 curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
 ```
+
 ## Using Dockerfile
 
-You can check this basic Nagios/Icinga setup using Docker.
+You can check this basic Nagios/Icinga setup using Docker. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
 
 0. Clone this project
 ```
@@ -114,14 +115,34 @@ $ cd alfresco-nagios
 1. Configure Alfresco admin credentials, host, address, and JMXProxy manager credentials in Dockerfile according to your Alfresco repository target to monitor
 
 ```
-ENV ICINGA_ADMIN admin
-ENV ALF_USER admin
-ENV ALF_PASS s3cret
-ENV ALF_HOST alf5.melmac.net
-ENV ALF_ADDR 127.0.0.1
+##
+## Icinga Config
+##
+ENV ICINGA_CONFIG /etc/icinga/objects
+ENV ICINGA_PLUGIN /usr/lib/nagios/plugins
+ENV ICINGA_ADMIN admin 
+
+##
+## Alfresco Community Template
+## 
+ENV ALF_HOST alf-ce.melmac.net 
 ENV ALF_PORT 8080 
-ENV JMX_USER manager
-ENV JMX_PASS s3cret
+ENV ALF_ADDR 127.0.0.1
+# Alfresco admin user for monitoring
+ENV ALF_USER monitor
+ENV ALF_PASS secret
+# Alfresco JMXProxy manager user
+ENV JMXPROXY_USER manager
+ENV JMXPROXY_PASS s3cret
+
+##
+## Alfresco Enterprise Template
+##
+ENV ACS_HOST alf-ee.melmac.net 
+ENV ACS_ADDR 127.0.0.1 
+# JMX User
+ENV JMX_USER monitorRole
+ENV JMX_PASS change_asap 
 ```
 
 2. Run docker commands
@@ -137,8 +158,8 @@ Note: Take into consideration that email alerts are not configured. You should c
 
 ## Tested on
 
-- Alfresco 2017XXGA
-- OOTB Support Tools Addon >0.1
+- Alfresco 2017XXGA + OOTB Support Tools Addon >0.1
+- Alfresco 5.0.25 EE 
 - Nagios/Icinga 3
 - Docker version 1.12.6
 
