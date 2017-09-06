@@ -1,4 +1,4 @@
-# Nagios setup for Alfresco Community
+# Nagios setup for Alfresco
 
 ## Introduction
 
@@ -19,7 +19,7 @@ Finally other plugins may be useful depending on your Alfresco stack:
 - check_tomcat for monitoring threads and JVM 
 - check_jmx or Jolokia for monitoring JMX variables  
 
-### OOTB Support Tools helper for monitoring
+### OOTB Support Tools helper for monitoring Alfresco Community
 
 ![Nagios Alfresco](images/alfresco-nagios.png)
  
@@ -37,13 +37,17 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 - SOLR Health
 - SOLR indices size (for any core)
 
-### JMX information in Alfresco Community
+### JMX info in Alfresco Community
 
 With JMXProxy servlet, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
 
-## Nagios-Icinga configuration for Alfresco CE
+### JMX info in Alfresco Enterprise
 
-The files involved in Nagios/Icinga configuration are the following:
+Alfresco Enterprise (aka Alfresco Content Services) provides custom mbeans via JMX, not available in Alfresco Community. A good example for getting monitor information via JMX (check_jmx) is given [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin).    
+
+## Nagios-Icinga configuration for Alfresco Community
+
+The files involved in Nagios/Icinga configuration for Alfresco Community are the following:
 
 - hosts-alfresco.cfg (Alfresco hosts definition)
 - commands-ootb.cfg (Nagios commands)
@@ -102,6 +106,16 @@ Finally you need to restart Alfresco service. And for checking it you can type:
 curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
 ```
 
+### Enabling JMX in Alfresco Enterprise
+
+In recent versions of Alfresco Enterprise you should enable JMX via $JAVA_OPTS and alfresco-global.properties:
+
+ * In $ALF_HOME/tomcat/bin/setenv.sh, you should set -Dcom.sun.management.jmxremote between your $JAVA_OPTS
+ * In alfresco-global.properties, you should configure alfresco.jmx.connector.enabled=true
+ * In alfresco-global.properties, it is useful to adequate alfresco.jmx.dir=/opt/alfresco/tomcat/shared/jmx for changing JMX default passwords including in alfresco-jmxrmi.access and alfresco-jmxrmi.password files
+
+You can test it with a JMX Console such as JConsole or even via check_jmx commands. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
+
 ## Using Dockerfile
 
 You can check this basic Nagios/Icinga setup using Docker. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
@@ -112,7 +126,7 @@ $ git clone https://github.com/zylklab/alfresco-nagios
 $ cd alfresco-nagios
 ```
 
-1. Configure Alfresco admin credentials, host, address, and JMXProxy manager credentials in Dockerfile according to your Alfresco repository target to monitor
+1. Configure Alfresco templates in Dockerfile according to your Alfresco repository targets to monitor.
 
 ```
 ##
@@ -172,6 +186,7 @@ Note: Take into consideration that email alerts are not configured. You should c
 - [Alfresco Nagios Setup for Alfresco Enterprise](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin)
 - [OOTB Support Tools](https://github.com/OrderOfTheBee/ootbee-support-tools)
 - [Using the JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet)
+- [Enabling JMX in Alfresco Enterprise](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
 - [Jolokia tutorial](https://jolokia.org/tutorial.html)
 - [Blog Post - Monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon)
 - [Blog Post - More on monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools)
