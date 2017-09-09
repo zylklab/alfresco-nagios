@@ -72,7 +72,8 @@ ADD scripts/check_manager_jmxproxy.sh $ICINGA_PLUGIN/check_manager_jmxproxy.sh
 ADD scripts/check_ootb_active_sessions.sh $ICINGA_PLUGIN/check_ootb_active_sessions.sh
 ADD scripts/check_ootb_performance_stats.sh $ICINGA_PLUGIN/check_ootb_performance_stats.sh
 ADD scripts/check_ootb_solr.sh $ICINGA_PLUGIN/check_ootb_solr.sh
-
+ADD images/alfresco.gif /usr/share/nagios/htdocs/images/logos/base/alfresco.gif
+ADD images/alfresco.png /usr/share/nagios/htdocs/images/logos/base/alfresco.png
 RUN chmod +x $ICINGA_PLUGIN/check_ootb* $ICINGA_PLUGIN/check_manager_jmxproxy.sh
 
 RUN sed -i "s/alf5.melmac.net/$ALF_HOST/" $ICINGA_CONFIG/hosts-alfresco.cfg 
