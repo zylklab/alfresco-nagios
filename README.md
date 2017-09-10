@@ -118,7 +118,7 @@ You can test it with a JMX Console such as JConsole or even via check_jmx comman
 
 ## Using Dockerfile
 
-You can check this basic Nagios/Icinga setup using Docker. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
+You can check this basic Nagios/Icinga setup using Docker in Ubuntu 16.04 LTS. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
 
 0. Clone this project
 ```
@@ -170,12 +170,28 @@ $ sudo docker run -i -t zylklab/icingalf
 
 Note: Take into consideration that email alerts are not configured. You should configure postfix and Icinga/Nagios contacts.
 
+## Using Vagrantfile
+
+Other way of testing this setup is via Vagrantfile. This creates a Virtualbox VM based on Ubuntu 14.04 LTS and it provisions the needed Icinga installation and configuration. The template variables for the Alfresco targets are included in scripts/icinga-provision-script.sh  
+
+```
+$ git clone https://github.com/zylklab/alfresco-nagios
+$ cd alfresco-nagios
+# Edit scripts/icinga-provision-script.sh for setting Alfresco target vars
+$ vagrant up
+$ vagrant ssh
+# Once you finish you may exit VM, vagrant halt (or even vagrant destroy -f)
+```
+
+Then login in http://vagrant-server-ip/icinga with icingaadmin/admin credentials
+
 ## Tested on
 
 - Alfresco 2017XXGA + OOTB Support Tools Addon >0.1
 - Alfresco 5.0.25 EE 
 - Nagios/Icinga 3
 - Docker version 1.12.6
+- Vagrant 1.8.1 
 
 ## Author
 
