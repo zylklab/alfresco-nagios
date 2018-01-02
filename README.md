@@ -1,5 +1,15 @@
 # Nagios setup for Alfresco
 
+## Table of Contents
+- [Introduction](#introduction)
+- [Nagios-Icinga configuration for Alfresco Community](#nagios-icinga-configuration-for-alfresco-community)
+- [Nagios-Icinga configuration for Alfresco Enterprise](#nagios-icinga-configuration-for-alfresco-enterprise)
+- [Using Dockerfile](#using-dockerfile)
+- [Using Vagrantfile](#using-vagrantfile)
+- [Tested on](#tested-on)
+- [Author](#author)
+- [Links](#links)
+
 ## Introduction
 
 A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin) but the most interesting information of this plugin is for Enterprise Edition (EE), although general direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. For example:
@@ -18,32 +28,6 @@ Finally other plugins may be useful depending on your Alfresco stack:
 - check_mysql for monitoring your database pool connections (in case of Mysql)
 - check_tomcat for monitoring threads and JVM 
 - check_jmx or Jolokia for monitoring JMX variables  
-
-### OOTB Support Tools helper for monitoring Alfresco Community
-
-![Nagios Alfresco](images/alfresco-nagios.png)
- 
-With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
-
-- JVM Used Memory
-- Number of Threads
-- Number of active database connections
-- Number of logged users
-- Number of tickets
-- Process Load
-- System Load
-- SOLR numDocs (for any core)
-- SOLR deletedDocs
-- SOLR Health
-- SOLR indices size (for any core)
-
-### JMX info in Alfresco Community
-
-With JMXProxy servlet, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
-
-### JMX info in Alfresco Enterprise
-
-Alfresco Enterprise (aka Alfresco Content Services) provides custom mbeans via JMX, not available in Alfresco Community. A good example for getting monitor information via JMX (check_jmx) is given [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin).    
 
 ## Nagios-Icinga configuration for Alfresco Community
 
@@ -76,6 +60,8 @@ For consuming OOTB webscripts, you need to create a dedicated user for Alfresco 
 
 ### Enabling JMXProxy servlet
 
+With JMXProxy servlet, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
+
 If you use the default installer in Alfresco, the Tomcat manager application is deployed under webapps directory. You may enable JMXProxy servlet for monitoring JMX variables in Alfresco Community: 
 
 - Create $ALF_HOME/tomcat/conf/Catalina/localhost/manager.xml
@@ -106,7 +92,39 @@ Finally you need to restart Alfresco service. And for checking it you can type:
 curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
 ```
 
+### OOTB Support Tools helper for monitoring Alfresco Community
+
+![Nagios Alfresco](images/alfresco-nagios.png)
+ 
+With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
+
+- JVM Used Memory
+- Number of Threads
+- Number of active database connections
+- Number of logged users
+- Number of tickets
+- Process Load
+- System Load
+- SOLR numDocs (for any core)
+- SOLR deletedDocs
+- SOLR Health
+- SOLR indices size (for any core)
+
+## Nagios-Icinga configuration for Alfresco Enterprise
+
+The files involved in Nagios/Icinga configuration for Alfresco Enterprise are the following:
+
+- hosts-alfresco.cfg (Alfresco hosts definition)
+- commands-jmx.cfg (Nagios commands)
+- services-jmx.cfg (Non NRPE services)
+
+By the way, check_alfresco script and check_alfresco.jar is usually placed at /usr/lib/nagios/plugins/
+
+Finally, you need to have Java installed on your Nagios-Icinga server for executing check_alfresco 
+
 ### Enabling JMX in Alfresco Enterprise
+
+Alfresco Enterprise (aka Alfresco Content Services) provides custom mbeans via JMX, not available in Alfresco Community. A good example for getting monitor information via JMX (check_jmx) is given [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin).    
 
 In recent versions of Alfresco Enterprise you should enable JMX via $JAVA_OPTS and alfresco-global.properties:
 
