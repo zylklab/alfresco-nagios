@@ -12,44 +12,50 @@
 
 ## Introduction
 
-A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin) but the most interesting information of this plugin is for Enterprise Edition (EE), although general direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. For example:
+A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin), but the most interesting information for this is related to Enterprise Edition (EE). General direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too, for example:
 
 - check_ssh for direct monitorization of ssh port
 - check_http for direct monitorization of http(s) service (like 80 or 443)
 - check_tcp for checking Tomcat and Alfresco ports (like 8009, 8080, 8443 or 50500)
-
-Additionally you may use other Nagios common plugins depending on your monitorization strategy:
 - check_snmp for checking CPU, RAM, Load & Swap (via standard SNMP protocol) if using SNMP protocol
 - check_esxi for checking CPU, RAM, Load from VMware API point of view (if your instance is virtualized)
 
-Also an important thing to monitor in Alfresco server is related to disk sizes (and inodes) for contentstores, Tomcat temp, Alfresco logs, Solr indices, and Solr backup indices.. and also processes like Libreoffice too. 
-
-Finally other plugins may be useful depending on your Alfresco stack:
-- check_mysql for monitoring your database pool connections (in case of Mysql)
-- check_tomcat for monitoring threads and JVM 
-- check_jmx or Jolokia for monitoring JMX variables  
+We can obtain additional monitoring information for Alfresco Community via OOTB Support Tools webscripts (System Performance, Active Sessions and SOLR).
 
 ## Nagios-Icinga configuration for Alfresco Community
 
 The files involved in Nagios/Icinga configuration for Alfresco Community are the following:
 
-- hosts-alfresco.cfg (Alfresco hosts definition)
-- commands-ootb.cfg (Nagios commands)
-- services-ootb.cfg (Non NRPE services)
-- nrpe-ootb.cfg (NRPE services)
-- nrpe.cfg (For nrpe-server - only if NRPE)
+- objects/hosts-alfresco.cfg (Alfresco hosts definition)
+- objects/commands-ootb.cfg (Nagios commands)
+- objects/services-ootb.cfg (Non NRPE services)
+- nrpe/nrpe-ootb.cfg (NRPE services)
+- nrpe/nrpe.cfg (For nrpe-server - only if NRPE)
 
 By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
 
-- check_ootb_active_sessions.sh
-- check_ootb_performance_stats.sh
-- check_ootb_solr.sh
-- check_manager_jmxproxy.sh (JMX monitoring)
+- scripts/check_ootb_performance_stats.sh
+- scripts/check_ootb_active_sessions.sh
+- scripts/check_ootb_solr.sh
+- scripts/check_manager_jmxproxy.sh (JMX monitoring)
 
 For using this setup you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
 
 ```
 $ sudo apt-get install curl jshon
+```
+
+Once installed in your Nagios server, you can the corresponding scripts:
+
+```
+$ check_ootb_performance_stats.sh 
+USAGE:
+  check_ootb_performance_stats.sh <SERVER> <PORT> <USERNAME> <PASSWORD> <VAR> <WARNING> <CRITICAL>
+
+    where VAR=[MaxMemory|TotalMemory|UsedMemory|FreeMemory|ProcessLoad|SystemLoad|ThreadCount|PeakThreadCount]
+   
+check_ootb_performance_stats.sh alfie.zylk.net 443 monitor secret UsedMemory 1000 2000
+WARNING: UsedMemory = 1453 (>1000)
 ```
 
 Note: If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
@@ -89,7 +95,7 @@ override="true">
 Finally you need to restart Alfresco service. And for checking it you can type:
 
 ```
-curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
+$ curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
 ```
 
 ### OOTB Support Tools helper for monitoring Alfresco Community
@@ -114,9 +120,9 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 
 The files involved in Nagios/Icinga configuration for Alfresco Enterprise are the following:
 
-- hosts-alfresco.cfg (Alfresco hosts definition)
-- commands-jmx.cfg (Nagios commands)
-- services-jmx.cfg (Non NRPE services)
+- jmx/hosts-alfresco.cfg (Alfresco hosts definition)
+- jmx/commands-jmx.cfg (Nagios commands)
+- jmx/services-jmx.cfg (Non NRPE services)
 
 By the way, check_alfresco script and check_alfresco.jar is usually placed at /usr/lib/nagios/plugins/
 
