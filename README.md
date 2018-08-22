@@ -4,6 +4,7 @@
 - [Introduction](#introduction)
 - [Nagios-Icinga configuration for Alfresco Community](#nagios-icinga-configuration-for-alfresco-community)
 - [Nagios-Icinga configuration for Alfresco Enterprise](#nagios-icinga-configuration-for-alfresco-enterprise)
+- [Alfresco Search Services](#alfresco-search-services)
 - [Using Dockerfile](#using-dockerfile)
 - [Using Vagrantfile](#using-vagrantfile)
 - [Tested on](#tested-on)
@@ -29,20 +30,23 @@ The files involved in Nagios/Icinga configuration for Alfresco Community are the
 - objects/hosts-alfresco.cfg (Alfresco hosts definition)
 - objects/commands-ootb.cfg (Nagios commands)
 - objects/services-ootb.cfg (Non NRPE services)
+- objects/commands-ass.cfg (Nagios commands for Alfresco Search Services)
+- objects/services-ass.cfg (Non NRPE services for Alfresco Search Services)
 - nrpe/nrpe-ootb.cfg (NRPE services)
 - nrpe/nrpe.cfg (For nrpe-server - only if NRPE)
 
-By the way, shell scripts are usually placed at /usr/lib/nagios/plugins/
+By the way, shell/python scripts are usually placed at /usr/lib/nagios/plugins/
 
 - scripts/check_ootb_performance_stats.sh
 - scripts/check_ootb_active_sessions.sh
 - scripts/check_ootb_solr.sh
 - scripts/check_manager_jmxproxy.sh (JMX monitoring)
+- scripts/check_alfresco_solr.py
 
 For using this setup you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
 
 ```
-$ sudo apt-get install curl jshon
+$ sudo apt-get install curl jshon python-nagiosplugin python-urllib3 
 ```
 
 Once installed in your Nagios server, you can the corresponding scripts:
@@ -140,6 +144,13 @@ In recent versions of Alfresco Enterprise you should enable JMX via $JAVA_OPTS a
 
 You can test it with a JMX Console such as JConsole or even via check_jmx commands. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
 
+## Alfresco Search Services
+
+Alfresco Search Services are monitored via check_alfresco_solr.py script by Alexandre Chapellon. The python script helps to monitor index, handlers, FTS and caches values. You may find more info at:
+
+- [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
+- [Nagios plugin for Alfresco Search Services](https://github.com/alxgomz/nagios-plugin-alfresco-search-services)
+
 ## Using Dockerfile
 
 You can check this basic Nagios/Icinga setup using Docker in Ubuntu 16.04 LTS. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
@@ -181,6 +192,13 @@ ENV ACS_ADDR 127.0.0.1
 # JMX User
 ENV JMX_USER monitorRole
 ENV JMX_PASS change_asap 
+
+##
+## Alfresco Search Services
+## 
+ENV ASS_HOST ass.melmac.net
+ENV ASS_PORT 8983
+ENV ASS_ADDR 127.0.0.1
 ```
 
 2. Run docker commands
@@ -230,3 +248,5 @@ Then login in http://vagrant-server-ip/icinga with icingaadmin/admin credentials
 - [Jolokia tutorial](https://jolokia.org/tutorial.html)
 - [Blog Post - Monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon)
 - [Blog Post - More on monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools)
+- [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
+- [Nagios plugin for Alfresco Search Services](https://github.com/alxgomz/nagios-plugin-alfresco-search-services)

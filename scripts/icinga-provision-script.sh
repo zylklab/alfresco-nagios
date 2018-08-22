@@ -31,6 +31,13 @@ ALF_PASS=secret
 JMXPROXY_USER=manager
 JMXPROXY_PASS=s3cret
 
+##
+## Alfresco Search Services
+## 
+ASS_HOST=ass.melmac.net 
+ASS_PORT=8983 
+ASS_ADDR=127.0.0.1 
+
 # Ubuntu xenial fix for Vagrant Box
 # Icinga automate install and dependencies
 echo "postfix postfix/mailname string localhost" | debconf-set-selections
@@ -52,6 +59,21 @@ cp /home/vagrant/images/alfresco.gif /usr/share/nagios/htdocs/images/logos/base/
 cp /home/vagrant/images/alfresco.png /usr/share/nagios/htdocs/images/logos/base/
 chmod +x /usr/lib/nagios/plugins/*
 
+# PNP4Nagios
+sed -i "s#/cgi-bin/nagios3#/icinga/cgi-bin#" /etc/pnp4nagios/config.php
+sed -i "s/process_performance_data=0/process_performance_data=1/" /etc/icinga/icinga.cfg
+echo "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg" >> /etc/icinga/icinga.cfg
+sed -i 's/RUN="no"/RUN="yes"/' /etc/default/npcd
+sed -i "s/nagios3/icinga/" /etc/pnp4nagios/apache.conf 
+cp /home/vagrant/pnp/generic-host_icinga.cfg /etc/icinga/objects/generic-host_icinga.cfg  
+cp /home/vagrant/pnp/generic-service_icinga.cfg /etc/icinga/objects/generic-service_icinga.cfg  
+echo "Include /etc/pnp4nagios/apache.conf" >> /etc/icinga/apache2.conf
+mv /usr/share/pnp4nagios/html/install.php /usr/share/pnp4nagios/html/install.php.orig
+cp /usr/share/doc/pnp4nagios/examples/ssi/status-header.ssi /usr/share/icinga/htdocs/ssi/
+ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+cp /usr/share/icinga/htdocs/images/action.gif /usr/share/icinga/htdocs/images/action.gif.orig
+cp /usr/share/icinga/htdocs/images/stats.gif /usr/share/icinga/htdocs/images/action.gif
+
 # Alfresco Community config
 sed -i "s/alf5.melmac.net/$ALF_HOST/" $ICINGA_CONFIG/hosts-alfresco.cfg 
 sed -i "s/alf5.melmac.net!443/$ALF_HOST!$ALF_PORT/" $ICINGA_CONFIG/services-ootb.cfg 
@@ -64,5 +86,11 @@ sed -i "s/acs5.melmac.net/$ACS_HOST/" $ICINGA_CONFIG/hosts-alfresco.cfg
 sed -i "s/monitor!secret/$JMX_USER!$JMX_PASS/" $ICINGA_CONFIG/services-jmx.cfg 
 echo "$ACS_ADDR $ACS_HOST" >> /etc/hosts
 
+# Alfresco Search services
+sed -i "s/ass.melmac.net/$ASS_HOST/" $ICINGA_CONFIG/hosts-alfresco.cfg
+sed -i "s/ass.melmac.net!8983/$ASS_HOST!$ASS_PORT/" $ICINGA_CONFIG/services-ass.cfg
+echo "$ASS_ADDR $ASS_HOST" >> /etc/hosts
+
+service npcd restart
 service icinga restart
 service apache2 restart
