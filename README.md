@@ -13,15 +13,7 @@
 
 ## Introduction
 
-A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin), but the most interesting information for this is related to Enterprise Edition (EE). General direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too, for example:
-
-- check_ssh for direct monitorization of ssh port
-- check_http for direct monitorization of http(s) service (like 80 or 443)
-- check_tcp for checking Tomcat and Alfresco ports (like 8009, 8080, 8443 or 50500)
-- check_snmp for checking CPU, RAM, Load & Swap (via standard SNMP protocol) if using SNMP protocol
-- check_esxi for checking CPU, RAM, Load from VMware API point of view (if your instance is virtualized)
-
-We can obtain additional monitoring information for Alfresco Community via OOTB Support Tools webscripts (System Performance, Active Sessions and SOLR).
+A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin), but the most interesting information for this is related to Enterprise Edition (EE). General direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. We can obtain additional monitoring information for Alfresco Community via OOTB Support Tools webscripts (System Performance, Active Sessions and SOLR).
 
 ## Nagios-Icinga configuration for Alfresco Community
 
@@ -43,66 +35,11 @@ By the way, shell/python scripts are usually placed at /usr/lib/nagios/plugins/
 - scripts/check_manager_jmxproxy.sh (JMX monitoring)
 - scripts/check_alfresco_solr.py
 
-For using this setup you need some dependencies like curl and jshon in your Nagios Server. In Ubuntu 16.04 LTS, for example:
-
-```
-$ sudo apt-get install curl jshon python-nagiosplugin python-urllib3 
-```
-
-Once installed in your Nagios server, you can the corresponding scripts:
-
-```
-$ check_ootb_performance_stats.sh 
-USAGE:
-  check_ootb_performance_stats.sh <SERVER> <PORT> <USERNAME> <PASSWORD> <VAR> <WARNING> <CRITICAL>
-
-    where VAR=[MaxMemory|TotalMemory|UsedMemory|FreeMemory|ProcessLoad|SystemLoad|ThreadCount|PeakThreadCount]
-   
-check_ootb_performance_stats.sh alfie.zylk.net 443 monitor secret UsedMemory 1000 2000
-WARNING: UsedMemory = 1453 (>1000)
-```
+For using this setup you need some dependencies like curl, jshon, python-nagiosplugin or python-urllib3 in your Nagios Server. 
 
 Note: If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
 
-### Alfresco CE configuration
-
-For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). Previously you need to install [OOTB Support Tools addon](https://github.com/OrderOfTheBee/ootbee-support-tools) in your Alfresco CE server.
-
-### Enabling JMXProxy servlet
-
-With JMXProxy servlet, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
-
-If you use the default installer in Alfresco, the Tomcat manager application is deployed under webapps directory. You may enable JMXProxy servlet for monitoring JMX variables in Alfresco Community: 
-
-- Create $ALF_HOME/tomcat/conf/Catalina/localhost/manager.xml
-
-```
-<Context antiResourceLocking="false" privileged="true" useHttpOnly="true" 
-override="true">
-  <Valve className="org.apache.catalina.authenticator.BasicAuthenticator" securePagesWithPragma="false" 
-/>
-</Context>
-
-```
-
-- Edit credentials and roles for manager user at $ALF_HOME/tomcat/conf/tomcat-users.xml
-
-```
-<tomcat-users>
-  <user username="CN=Alfresco Repository Client, OU=Unknown, O=Alfresco Software Ltd., L=Maidenhead, ST=UK, C=GB" roles="repoclient" password="null"/>
-  <user username="CN=Alfresco Repository, OU=Unknown, O=Alfresco Software Ltd., L=Maidenhead, ST=UK, C=GB" roles="repository" password="null"/>
-  <role rolename="manager-jmx"/>
-  <user username="monitor" password="secret" roles="manager-jmx"/>
-</tomcat-users>
-```
-
-Finally you need to restart Alfresco service. And for checking it you can type:
-
-```
-$ curl -u monitor:secret "http://127.0.0.1:8080/manager/jmxproxy/?get=java.lang:type=OperatingSystem&att=OpenFileDescriptorCount"
-```
-
-### OOTB Support Tools helper for monitoring Alfresco Community
+### OOTB Support Tools webscripts
 
 ![Nagios Alfresco](images/alfresco-nagios.png)
  
@@ -120,6 +57,16 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 - SOLR Health
 - SOLR indices size (for any core)
 
+For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). 
+
+Previously you need to install [OOTB Support Tools addon](https://github.com/OrderOfTheBee/ootbee-support-tools) in your Alfresco CE server.
+
+### JMXProxy servlet
+
+[With JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet) enabled in Alfresco Community, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). 
+
+For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
+
 ## Nagios-Icinga configuration for Alfresco Enterprise
 
 The files involved in Nagios/Icinga configuration for Alfresco Enterprise are the following:
@@ -130,26 +77,13 @@ The files involved in Nagios/Icinga configuration for Alfresco Enterprise are th
 
 By the way, check_alfresco script and check_alfresco.jar is usually placed at /usr/lib/nagios/plugins/
 
-Finally, you need to have Java installed on your Nagios-Icinga server for executing check_alfresco 
-
-### Enabling JMX in Alfresco Enterprise
-
-Alfresco Enterprise (aka Alfresco Content Services) provides custom mbeans via JMX, not available in Alfresco Community. A good example for getting monitor information via JMX (check_jmx) is given [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin).    
-
-In recent versions of Alfresco Enterprise you should enable JMX via $JAVA_OPTS and alfresco-global.properties:
-
- * In $ALF_HOME/tomcat/bin/setenv.sh, you should set -Dcom.sun.management.jmxremote between your $JAVA_OPTS
- * In alfresco-global.properties, you should configure alfresco.jmx.connector.enabled=true
- * In alfresco-global.properties, it is useful to adequate alfresco.jmx.dir=/opt/alfresco/tomcat/shared/jmx for changing JMX default passwords including in alfresco-jmxrmi.access and alfresco-jmxrmi.password files
-
-You can test it with a JMX Console such as JConsole or even via check_jmx commands. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
+Finally, you need to have Java installed on your Nagios-Icinga server for executing check_alfresco script, and to enable JMX in Alfresco Server. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
 
 ## Alfresco Search Services
 
-Alfresco Search Services are monitored via check_alfresco_solr.py script by Alexandre Chapellon. The python script helps to monitor index, handlers, FTS and caches values. You may find more info at:
+Alfresco Search Services are monitored via [check_alfresco_solr.py](https://github.com/alxgomz/nagios-plugin-alfresco-search-services) script by Alexandre Chapellon. The python script helps to monitor index, handlers, FTS and caches values. It is valid both for Alfresco Community and Alfresco Enterprise. You may find more info at:
 
 - [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
-- [Nagios plugin for Alfresco Search Services](https://github.com/alxgomz/nagios-plugin-alfresco-search-services)
 
 ## Using Dockerfile
 
