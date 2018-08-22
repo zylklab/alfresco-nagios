@@ -81,6 +81,7 @@ Finally, you need to have Java installed on your Nagios-Icinga server for execut
 
 ## Alfresco Search Services
 
+![Nagios ASS](images/alfresco-ass.png)
 Alfresco Search Services are monitored via [check_alfresco_solr.py](https://github.com/alxgomz/nagios-plugin-alfresco-search-services) script by Alexandre Chapellon. The python script helps to monitor index, handlers, FTS and caches values. It is valid both for Alfresco Community and Alfresco Enterprise. You may find more info at:
 
 - [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
