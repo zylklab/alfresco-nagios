@@ -53,15 +53,15 @@ fi
 
 if [[ "$CHECK" == "OK" ]]; then
    if ((`int $MYVAR` >= $CRITICAL));then
-      echo "CRITICAL: $OBJ $ATT $KEY = $MYVAR (>=$CRITICAL)"
+      echo "CRITICAL: $OBJ $ATT $KEY = $MYVAR (>=$CRITICAL) | $KEY = $MYVAR"
       exit 2
    fi
    if ((`int $MYVAR` >= $WARNING));then
-      echo "WARNING: $OBJ $ATT $KEY = $MYVAR (>=$WARNING)"
+      echo "WARNING: $OBJ $ATT $KEY = $MYVAR (>=$WARNING) | $KEY = $MYVAR"
       exit 1 
    fi
 
-   echo "INFO: JMXPROXY ($OBJ $ATT $KEY) = $MYVAR"
+   echo "INFO: JMXPROXY ($OBJ $ATT $KEY) = $MYVAR | $KEY = $MYVAR"
    exit 0
 elif [[ "$CHECK" == "Failed" ]]; then
    echo "CRITICAL: ${SERVER}"

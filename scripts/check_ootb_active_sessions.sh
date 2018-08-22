@@ -47,15 +47,15 @@ fi
  
 if [[ "$CHECK" == "OK" ]]; then
    if (($ACTIVE_SESSION_VAR > $CRITICAL));then
-      echo "CRITICAL: $5 = $ACTIVE_SESSION_VAR (>$CRITICAL)"
+      echo "CRITICAL: $5 = $ACTIVE_SESSION_VAR (>$CRITICAL) $5 = $ACTIVE_SESSION_VAR"
       exit 2
    fi
    if (($ACTIVE_SESSION_VAR > $WARNING));then
-      echo "WARNING: $5 = $ACTIVE_SESSION_VAR (>$WARNING)"
+      echo "WARNING: $5 = $ACTIVE_SESSION_VAR (>$WARNING) | $5 = $ACTIVE_SESSION_VAR"
       exit 1 
    fi
 
-   echo "INFO: Sessions ($5) = $ACTIVE_SESSION_VAR"
+   echo "INFO: Sessions ($5) = $ACTIVE_SESSION_VAR | $5 = $ACTIVE_SESSION_VAR"
    exit 0
 elif [[ "$CHECK" == "Failed" ]]; then
    echo "CRITICAL: ${SERVER}"

@@ -51,15 +51,15 @@ fi
  
 if [[ "$CHECK" == "OK" ]]; then
    if (($PERFORMANCE_VAR > $CRITICAL));then
-      echo "CRITICAL: $5 = $PERFORMANCE_VAR (>$CRITICAL)"
+      echo "CRITICAL: $5 = $PERFORMANCE_VAR (>$CRITICAL) | $5 = $PERFORMANCE_VAR"
       exit 2
    fi
    if (($PERFORMANCE_VAR > $WARNING));then
-      echo "WARNING: $5 = $PERFORMANCE_VAR (>$WARNING)"
+      echo "WARNING: $5 = $PERFORMANCE_VAR (>$WARNING) | $5 = $PERFORMANCE_VAR"
       exit 1 
    fi
 
-   echo "INFO: $5 = $PERFORMANCE_VAR"
+   echo "INFO: $5 = $PERFORMANCE_VAR | $5 = $PERFORMANCE_VAR"
    exit 0
 
 elif [[ "$CHECK" == "Failed" ]]; then

@@ -64,15 +64,15 @@ if [[ "$CHECK" == "OK" ]]; then
    fi
 
    if (($SOLR_VAR > $CRITICAL));then
-      echo "CRITICAL: SOLR ($VAR) = $SOLR_VAR (>$CRITICAL)"
+      echo "CRITICAL: SOLR ($VAR) = $SOLR_VAR (>$CRITICAL) | $VAR = $SOLR_VAR"
       exit 2
    fi
    if (($SOLR_VAR > $WARNING));then
-      echo "WARNING: SOLR ($VAR) = $SOLR_VAR (>$WARNING)"
+      echo "WARNING: SOLR ($VAR) = $SOLR_VAR (>$WARNING) | $VAR = $SOLR_VAR"
       exit 1 
    fi
 
-   echo "INFO: SOLR ($VAR) = $SOLR_VAR"
+   echo "INFO: SOLR ($VAR) = $SOLR_VAR | $VAR = $SOLR_VAR"
    exit 0
 elif [[ "$CHECK" == "Failed" ]]; then
    echo "CRITICAL: ${SERVER}"
