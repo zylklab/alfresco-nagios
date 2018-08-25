@@ -143,7 +143,7 @@ $ sudo docker build -t zylklab/icingalf .
 $ sudo docker run -i -t zylklab/icingalf
 ```
 
-3. Login http://docker-server-ip/icinga with icingaadmin/admin credentials.
+3. Login http://docker-server-ip/icinga (by default http://172.17.0.2/icinga) with icingaadmin/admin credentials. 
 
 Note: Take into consideration that email alerts are not configured. You should configure postfix and Icinga/Nagios contacts.
 
@@ -160,7 +160,7 @@ $ vagrant ssh
 # Once you finish you may exit VM, vagrant halt (or even vagrant destroy -f)
 ```
 
-Then login in http://vagrant-server-ip/icinga with icingaadmin/admin credentials
+Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) with icingaadmin/admin credentials
 
 ## Tested on
 

@@ -28,7 +28,7 @@ ALF_ADDR=127.0.0.1
 ALF_USER=monitor 
 ALF_PASS=secret
 # Alfresco JMXProxy manager user
-JMXPROXY_USER=manager
+JMXPROXY_USER=monitor
 JMXPROXY_PASS=s3cret
 
 ##
@@ -38,19 +38,23 @@ ASS_HOST=ass.melmac.net
 ASS_PORT=8983 
 ASS_ADDR=127.0.0.1 
 
-# Ubuntu xenial fix for Vagrant Box
 # Icinga automate install and dependencies
+echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections
 echo "postfix postfix/mailname string localhost" | debconf-set-selections
 echo "postfix postfix/main_mailer_type string 'Internet Site'" | debconf-set-selections
 echo "icinga-common icinga/check_external_commands select true" | debconf-set-selections
 echo "icinga-cgi icinga/adminpassword string admin" | debconf-set-selections
 echo "icinga-cgi icinga/adminpassword-repeat string admin" | debconf-set-selections
-apt-get update && apt-get install -y postfix icinga vim jshon curl openjdk-7-jre
+apt-get update && apt-get install -y apache2 postfix 
+apt-get install -y icinga vim jshon curl openjdk-7-jre python-urllib3 pnp4nagios python-setuptools python-dev build-essential
+easy_install pip
+pip install nagiosplugin
 
 # Icinga config
 sed -i "s/check_external_commands=0/check_external_commands=1/" /etc/icinga/icinga.cfg
 dpkg-statoverride --update --add nagios www-data 2710 /var/lib/icinga/rw/
 dpkg-statoverride --update --add nagios nagios 751 /var/lib/icinga/
+
 cp /home/vagrant/objects/* /etc/icinga/objects
 cp /home/vagrant/jmx/*cfg /etc/icinga/objects
 cp /home/vagrant/jmx/check_alfresco* /usr/lib/nagios/plugins
@@ -65,8 +69,10 @@ sed -i "s/process_performance_data=0/process_performance_data=1/" /etc/icinga/ic
 echo "broker_module=/usr/lib/pnp4nagios/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg" >> /etc/icinga/icinga.cfg
 sed -i 's/RUN="no"/RUN="yes"/' /etc/default/npcd
 sed -i "s/nagios3/icinga/" /etc/pnp4nagios/apache.conf 
+
 cp /home/vagrant/pnp/generic-host_icinga.cfg /etc/icinga/objects/generic-host_icinga.cfg  
 cp /home/vagrant/pnp/generic-service_icinga.cfg /etc/icinga/objects/generic-service_icinga.cfg  
+
 echo "Include /etc/pnp4nagios/apache.conf" >> /etc/icinga/apache2.conf
 mv /usr/share/pnp4nagios/html/install.php /usr/share/pnp4nagios/html/install.php.orig
 cp /usr/share/doc/pnp4nagios/examples/ssi/status-header.ssi /usr/share/icinga/htdocs/ssi/
