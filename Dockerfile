@@ -32,7 +32,7 @@ ENV ICINGA_ADMIN admin
 ## 
 ENV ALF_HOST alf-ce.melmac.net 
 ENV ALF_PORT 8080 
-ENV ALF_ADDR 192.168.1.123
+ENV ALF_ADDR 127.0.0.1 
 # Alfresco admin user for monitoring
 ENV ALF_USER monitor 
 ENV ALF_PASS secret
