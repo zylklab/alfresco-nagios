@@ -9,6 +9,9 @@
 ##
 ##   git clone https://github.com/zylklab/alfresco-nagios
 ##   cd alfresco-nagios
+##
+##  Edit ENV vars according your Alfresco setup
+##
 ##   sudo docker build -t zylklab/icingalf .
 ##   sudo docker run -i -t zylklab/icingalf  
 ##

@@ -11,6 +11,9 @@
 ##
 ##   git clone https://github.com/zylklab/alfresco-nagios
 ##   cd alfresco-nagios
+##
+##  Edit scripts/icinga-provision-script.sh for customizing hostnames and run vagrant command
+##
 ##   vagrant up 
 ##   vagrant ssh 
 ##
