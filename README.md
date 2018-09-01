@@ -40,8 +40,6 @@ For using this setup you need some dependencies like curl, jshon, python-nagiosp
 Note: If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
 
 ### OOTB Support Tools webscripts
-
-![Nagios Alfresco](images/alfresco-nagios.png)
  
 With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
 
@@ -56,6 +54,8 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 - SOLR deletedDocs
 - SOLR Health
 - SOLR indices size (for any core)
+
+![Nagios Alfresco](images/alf-ootb-nagios.png)
 
 For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). 
 
@@ -78,6 +78,8 @@ The files involved in Nagios/Icinga configuration for Alfresco Enterprise are th
 By the way, check_alfresco script and check_alfresco.jar is usually placed at /usr/lib/nagios/plugins/
 
 Finally, you need to have Java installed on your Nagios-Icinga server for executing check_alfresco script, and to enable JMX in Alfresco Server. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
+
+![Nagios Alfresco](images/alf-jmx-nagios.png)
 
 ## Alfresco Search Services
 
