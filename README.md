@@ -170,9 +170,11 @@ Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) 
 
 - Alfresco 2017XXGA + OOTB Support Tools Addon >0.1
 - Alfresco 5.0.25 EE 
-- Nagios/Icinga 3
+- Nagios/Icinga 3 
+- PNP4Nagios 0.6.0
 - Docker version 1.12.6
 - Vagrant 1.8.1 
+- Ubuntu 14.04 LTS
 
 ## Author
 
@@ -184,7 +186,7 @@ Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) 
 - [OOTB Support Tools](https://github.com/OrderOfTheBee/ootbee-support-tools)
 - [Using the JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet)
 - [Enabling JMX in Alfresco Enterprise](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
-- [Jolokia tutorial](https://jolokia.org/tutorial.html)
+- [Blog Post - How to use JMX in Alfresco](https://www.zylk.net/en/web-2-0/blog/-/blogs/enabling-jmx-in-alfresco)
 - [Blog Post - Monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/monitoring-alfresco-in-nagios-via-ootb-support-tools-addon)
 - [Blog Post - More on monitoring Alfresco in Nagios via OOTB Support Tools](http://www.zylk.net/es/web-2-0/blog/-/blogs/more-on-monitoring-alfresco-in-nagios-via-ootb-support-tools)
 - [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
