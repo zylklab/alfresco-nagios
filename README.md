@@ -5,7 +5,7 @@
 - [Nagios-Icinga configuration for Alfresco Community](#nagios-icinga-configuration-for-alfresco-community)
 - [Nagios-Icinga configuration for Alfresco Enterprise](#nagios-icinga-configuration-for-alfresco-enterprise)
 - [Alfresco Search Services](#alfresco-search-services)
-- [Using Dockerfile](#using-dockerfile)
+- [Using Docker](#using-docker)
 - [Using Vagrantfile](#using-vagrantfile)
 - [Tested on](#tested-on)
 - [Author](#author)
@@ -90,7 +90,7 @@ Alfresco Search Services are monitored via [check_alfresco_solr.py](https://gith
 You may find more details in Alfresco Premier Services blog post:
 - [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
 
-## Using Dockerfile
+## Using Docker
 
 You can check this basic Nagios/Icinga setup using Docker in Ubuntu 16.04 LTS. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
 
@@ -100,54 +100,42 @@ $ git clone https://github.com/zylklab/alfresco-nagios
 $ cd alfresco-nagios
 ```
 
-1. Configure Alfresco templates in Dockerfile according to your Alfresco repository targets to monitor.
+1. Configure Alfresco templates in docker-compose.yml file according to your Alfresco repository targets to monitor.
 
 ```
-##
-## Icinga Config
-##
-ENV ICINGA_CONFIG /etc/icinga/objects
-ENV ICINGA_PLUGIN /usr/lib/nagios/plugins
-ENV ICINGA_ADMIN admin 
-
-##
-## Alfresco Community Template
-## 
-ENV ALF_HOST alf-ce.melmac.net 
-ENV ALF_PORT 8080 
-ENV ALF_ADDR 127.0.0.1
-# Alfresco admin user for monitoring
-ENV ALF_USER monitor
-ENV ALF_PASS secret
-# Alfresco JMXProxy manager user
-ENV JMXPROXY_USER manager
-ENV JMXPROXY_PASS s3cret
-
-##
-## Alfresco Enterprise Template
-##
-ENV ACS_HOST alf-ee.melmac.net 
-ENV ACS_ADDR 127.0.0.1 
-# JMX User
-ENV JMX_USER monitorRole
-ENV JMX_PASS change_asap 
-
-##
-## Alfresco Search Services
-## 
-ENV ASS_HOST ass.melmac.net
-ENV ASS_PORT 8983
-ENV ASS_ADDR 127.0.0.1
+    environment:
+      - ALF_HOST=alfresco5.zylk.net
+      - ALF_PORT=8080 
+      - ALF_USER=${ALF_USER} 
+      - ALF_PASS=${ALF_PASSWORD}
+      - JMXPROXY_USER=${JMXPROXY_USER}
+      - JMXPROXY_PASS=${JMXPROXY_PASS}
+      - ACS_HOST=alfresco6.zylk.net
+      - ACS_PORT=8080
+      - JMX_USER=${JMX_USER}
+      - JMX_PASS=${JMX_PASS} 
+      - ASS_HOST=solr6.zylk.net
+      - ASS_PORT=8983 
+    extra_hosts:
+      - "alfresco5.zylk.net:192.168.1.100"
+      - "alfresco6.zylk.net:192.168.1.101"
+      - "solr6.zylk.net:192.168.1.102"
 ```
 
-2. Run docker commands
+2. Fire the Icinga container up throught docker-compose
 
 ```
-$ sudo docker build -t zylklab/icingalf .
-$ sudo docker run -i -t zylklab/icingalf
+$ docker-compose up
 ```
 
-3. Login http://docker-server-ip/icinga (by default http://172.17.0.2/icinga) with icingaadmin/admin credentials. 
+3. Login to Icinga
+
+To access Icinga, point your browser to your docker Host ip (probably locahost) at port 8888, like `http://localhost:8888/icinga` . Note that you can change the port mapping in docker-compose.yml file also
+
+```
+http://<docker-host-ip>:8888/icinga 
+```
+Credentials: icingaadmin/admin 
 
 Note: Take into consideration that email alerts are not configured. You should configure postfix and Icinga/Nagios contacts.
 

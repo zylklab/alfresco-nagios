@@ -1,0 +1,29 @@
+version: '3.1'
+
+networks:
+  monitoring:
+
+services:
+  icinga.zylk.net:
+    build: .
+    networks:
+      monitoring:
+    ports:
+      - 8888:80
+    environment:
+      - ALF_HOST=alfresco5.zylk.net
+      - ALF_PORT=8080 
+      - ALF_USER=${ALF_USER} 
+      - ALF_PASS=${ALF_PASSWORD}
+      - JMXPROXY_USER=${JMXPROXY_USER}
+      - JMXPROXY_PASS=${JMXPROXY_PASS}
+      - ACS_HOST=alfresco6.zylk.net
+      - ACS_PORT=8080
+      - JMX_USER=${JMX_USER}
+      - JMX_PASS=${JMX_PASS} 
+      - ASS_HOST=solr6.zylk.net
+      - ASS_PORT=8983 
+    extra_hosts:
+      - "alfresco5.zylk.net:192.168.1.100"
+      - "alfresco6.zylk.net:192.168.1.101"
+      - "solr6.zylk.net:192.168.1.102"
