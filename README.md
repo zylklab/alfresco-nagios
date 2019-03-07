@@ -167,6 +167,7 @@ Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) 
 ## Author
 
 - [Cesar Capillas](http://github.com/CesarCapillas)
+- [Mikel Asla](https://github.com/mikelasla)
 
 ## Links
 
