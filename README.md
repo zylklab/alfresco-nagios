@@ -164,7 +164,7 @@ Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) 
 - Vagrant 1.8.1 
 - Ubuntu 14.04 LTS
 
-## Author
+## Contributors
 
 - [Cesar Capillas](http://github.com/CesarCapillas)
 - [Mikel Asla](https://github.com/mikelasla)
