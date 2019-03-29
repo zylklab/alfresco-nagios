@@ -1,42 +1,26 @@
 ##
-## Dockerfile
-## 
-##  Icinga / Nagios for Alfresco and Alfresco Search Services (CE/EE)
+## Icinga / Nagios for Alfresco Content Services and Alfresco Search Services (CE/EE)
 ##
-##   by Cesar Capillas
+##   by Cesar Capillas & Mikel Asla
 
 FROM ubuntu:14.04 
 LABEL maintainer="cesar at zylk.net"
 LABEL collaborator="mikel.asla at zylk.net"
 
 ##
-## Icinga Config
+## Icinga default config paths
 ##
 ENV ICINGA_CONFIG="/etc/icinga/objects" ICINGA_PLUGIN="/usr/lib/nagios/plugins" ICINGA_ADMIN="admin"
 
 ##
-## Alfresco Community Template
+## Environment declaration
 ## 
-ENV ALF_HOST="alf-ce.melmac.net" ALF_PORT="8080"
-# Alfresco admin user for monitoring
-ENV ALF_USER="monitor" ALF_PASS="secret"
-# Alfresco JMXProxy manager user
-ENV JMXPROXY_USER="monitor" JMXPROXY_PASS="s3cret"
+ENV ALF_HOST="@@ALF_HOST@@" ALF_PORT="@@ALF_PORT@@" ALF_USER="@@ALF_USER@@" ALF_PASS="@@ALF_PASS@@" \ 
+JMXPROXY_USER="@@JMXPROXY_USER@@" JMXPROXY_PASS="@@JMXPROXY_PASS@@" JMX_USER="@@JMX_USER@@" JMX_PASS="@@JMX_PASS@@" \
+ASS_HOST="@@ASS_HOST@@" ASS_PORT="@@ASS_PORT@@"
 
 ##
-## Alfresco Enterprise Template
-##
-ENV ACS_HOST="alf-ee.zylk.net" ACS_PORT="8080"
-# JMX User
-ENV JMX_USER="monitorRole" JMX_PASS="change_asap"
-
-##
-## Alfresco Search Services
-## 
-ENV ASS_HOST="alf-ce.zylk.net" ASS_PORT="8983"
-
-##
-## Ubuntu Packages
+## Icinga Installation
 ##
 RUN set -x \
 	&& echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections \
@@ -64,36 +48,38 @@ RUN set -x \
 	&& cp /usr/share/icinga/htdocs/images/stats.gif /usr/share/icinga/htdocs/images/action.gif
 
 ##
-## Alfresco Icinga/Nagios configuration
+## Icinga Configuration
 ##
 ADD pnp/generic-host_icinga.cfg /etc/icinga/objects/generic-host_icinga.cfg  
 ADD pnp/generic-service_icinga.cfg /etc/icinga/objects/generic-service_icinga.cfg  
-# Alfresco Community 
-ADD objects/hosts-alfresco.cfg $ICINGA_CONFIG/hosts-alfresco.cfg
-ADD objects/services-ootb.cfg $ICINGA_CONFIG/services-ootb.cfg
-ADD objects/commands-ootb.cfg $ICINGA_CONFIG/commands-ootb.cfg
+# Images
+ADD images/alfresco.gif /usr/share/nagios/htdocs/images/logos/base/alfresco.gif
+ADD images/alfresco.png /usr/share/nagios/htdocs/images/logos/base/alfresco.png
 # Scripts
 ADD scripts/check_manager_jmxproxy.sh $ICINGA_PLUGIN/check_manager_jmxproxy.sh 
 ADD scripts/check_ootb_active_sessions.sh $ICINGA_PLUGIN/check_ootb_active_sessions.sh
 ADD scripts/check_ootb_performance_stats.sh $ICINGA_PLUGIN/check_ootb_performance_stats.sh
 ADD scripts/check_ootb_solr.sh $ICINGA_PLUGIN/check_ootb_solr.sh
-# Images
-ADD images/alfresco.gif /usr/share/nagios/htdocs/images/logos/base/alfresco.gif
-ADD images/alfresco.png /usr/share/nagios/htdocs/images/logos/base/alfresco.png
-# Alfresco Enterprise
-ADD jmx/commands-jmx.cfg $ICINGA_CONFIG/commands-jmx.cfg
-ADD jmx/services-jmx.cfg $ICINGA_CONFIG/services-jmx.cfg
-ADD jmx/check_alfresco $ICINGA_PLUGIN/check_alfresco
-ADD jmx/check_alfresco.jar $ICINGA_PLUGIN/check_alfresco.jar
 # Alfresco Search services
 ADD scripts/check_alfresco_solr.py $ICINGA_PLUGIN/check_alfresco_solr.py
 ADD objects/commands-ass.cfg $ICINGA_CONFIG/commands-ass.cfg
 ADD objects/services-ass.cfg $ICINGA_CONFIG/services-ass.cfg
+# Alfresco Community 
+ADD objects/host-acs.cfg $ICINGA_CONFIG/host-acs.cfg
+ADD objects/host-ass.cfg $ICINGA_CONFIG/host-ass.cfg
+ADD objects/services-ce.cfg $ICINGA_CONFIG/services-ce.cfg
+ADD objects/commands-ce.cfg $ICINGA_CONFIG/commands-ce.cfg
+# Alfresco Enterprise
+ADD objects/commands-ee.cfg $ICINGA_CONFIG/commands-ee.cfg
+ADD objects/services-ee.cfg $ICINGA_CONFIG/services-ee.cfg
+ADD jmx/check_alfresco $ICINGA_PLUGIN/check_alfresco
+ADD jmx/check_alfresco.jar $ICINGA_PLUGIN/check_alfresco.jar
+# Image entrypoint script
 ADD entrypoint.sh /entrypoint.sh
 
 RUN set -x \
 	&& chmod +x $ICINGA_PLUGIN/check_ootb* $ICINGA_PLUGIN/check_manager_jmxproxy.sh \
 	&& chmod +x /entrypoint.sh	
- 
+
 EXPOSE 80
 ENTRYPOINT ["/entrypoint.sh", "run"]
