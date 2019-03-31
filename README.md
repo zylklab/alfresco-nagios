@@ -5,43 +5,20 @@
 - [Nagios-Icinga configuration for Alfresco Community](#nagios-icinga-configuration-for-alfresco-community)
 - [Nagios-Icinga configuration for Alfresco Enterprise](#nagios-icinga-configuration-for-alfresco-enterprise)
 - [Alfresco Search Services](#alfresco-search-services)
-- [Using Docker](#using-docker)
-- [Using Vagrantfile](#using-vagrantfile)
+- [Using Docker Template](#using-docker-template)
 - [Tested on](#tested-on)
 - [Author](#author)
 - [Links](#links)
 
 ## Introduction
 
-A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin), but the most interesting information for this is related to Enterprise Edition (EE). General direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too. We can obtain additional monitoring information for Alfresco Community via OOTB Support Tools webscripts (System Performance, Active Sessions and SOLR).
+A well known example for Alfresco monitoring via JMX is available [here](https://github.com/toniblyx/alfresco-nagios-and-icinga-plugin), but the most interesting information for this is related to Enterprise Edition (EE). General direct monitoring commands (not JMX-based) may be used for Community Edition (CE) too via OOTB Support Tools webscripts (System Performance, Active Sessions and SOLR).
 
 ## Nagios-Icinga configuration for Alfresco Community
 
-The files involved in Nagios/Icinga configuration for Alfresco Community are the following:
-
-- objects/hosts-alfresco.cfg (Alfresco hosts definition)
-- objects/commands-ootb.cfg (Nagios commands)
-- objects/services-ootb.cfg (Non NRPE services)
-- objects/commands-ass.cfg (Nagios commands for Alfresco Search Services)
-- objects/services-ass.cfg (Non NRPE services for Alfresco Search Services)
-- nrpe/nrpe-ootb.cfg (NRPE services)
-- nrpe/nrpe.cfg (For nrpe-server - only if NRPE)
-
-By the way, shell/python scripts are usually placed at /usr/lib/nagios/plugins/
-
-- scripts/check_ootb_performance_stats.sh
-- scripts/check_ootb_active_sessions.sh
-- scripts/check_ootb_solr.sh
-- scripts/check_manager_jmxproxy.sh (JMX monitoring)
-- scripts/check_alfresco_solr.py
-
-For using this setup you need some dependencies like curl, jshon, python-nagiosplugin or python-urllib3 in your Nagios Server. 
-
-Note: If you plan to use NRPE config, you need to configure your Alfresco Server as a Nagios NRPE server.
-
 ### OOTB Support Tools webscripts
- 
-With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command, for generating alerts and graphs in Nagios. We can use the JSON information from the available webscripts of the addon:
+
+With [OOTB Support Tools addon for Alfresco Community Edition](https://github.com/OrderOfTheBee/ootbee-support-tools), it is possible to extract useful information about JVM, threads, logged users or SOLR via curl command. We can use the JSON information from the available webscripts of the addon for generating alerts and graphs in Nagios.
 
 - JVM Used Memory
 - Number of Threads
@@ -57,50 +34,45 @@ With [OOTB Support Tools addon for Alfresco Community Edition](https://github.co
 
 ![Nagios Alfresco](images/alf-ootb-nagios.png)
 
-For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer). 
+For consuming OOTB webscripts, you need to create a dedicated user for Alfresco Monitoring, for example monitor, with admin rights (belonging to ALFRESCO_ADMINISTRATORS group). Take into consideration that this password is used in Nagios scripts. You should use SSL in http requests, or running monitoring processes locally in Alfresco server via NRPE protocol (safer).
 
 Previously you need to install [OOTB Support Tools addon](https://github.com/OrderOfTheBee/ootbee-support-tools) in your Alfresco CE server.
 
-### JMXProxy servlet
+The ALF_USER and ALF_PASS are needed in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
 
-[With JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet) enabled in Alfresco Community, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services). 
+### JMXProxy servlet (legacy)
+
+[With JMX Proxy Servlet](https://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Using_the_JMX_Proxy_Servlet) enabled in Alfresco Community, you may get JMX information about Garbage Collector, Memory, Threads or Operating System in your Tomcat instance. The essential info may be obtained from OOTB Support Tools webscripts too, but other important parameters from Operating System or Garbage Collector may be extracted this way. Please note that this JMX information is related to the default mbeans in a Tomcat container, and not related to the Alfresco JMX objects contained in Alfresco Enterprise (aka Alfresco Content Services).
 
 For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
 
+The JMXPROXY_USER and JMXPROXY_PASS in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
+
 ## Nagios-Icinga configuration for Alfresco Enterprise
 
-The files involved in Nagios/Icinga configuration for Alfresco Enterprise are the following:
-
-- jmx/hosts-alfresco.cfg (Alfresco hosts definition)
-- jmx/commands-jmx.cfg (Nagios commands)
-- jmx/services-jmx.cfg (Non NRPE services)
-
-By the way, check_alfresco script and check_alfresco.jar is usually placed at /usr/lib/nagios/plugins/
-
-Finally, you need to have Java installed on your Nagios-Icinga server for executing check_alfresco script, and to enable JMX in Alfresco Server. For more details, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
+This set up needs JMX enabled Alfresco Server. For enabling JMX, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
 
 ![Nagios Alfresco](images/alf-jmx-nagios.png)
 
 ## Alfresco Search Services
 
-Alfresco Search Services are monitored via [check_alfresco_solr.py](https://github.com/alxgomz/nagios-plugin-alfresco-search-services) script by Alexandre Chapellon. The python script helps to monitor index, handlers, FTS and caches values. It is valid both for Alfresco Community and Alfresco Enterprise. 
+Alfresco Search Services (based on SOLR 6.x) are monitored via [check_alfresco_solr.py](https://github.com/alxgomz/nagios-plugin-alfresco-search-services) script by Alexandre Chapellon. The script helps to monitor index, handlers, FTS and caches values. It is valid both for Alfresco Community and Alfresco Enterprise setups.
 
 ![Nagios ASS](images/alfresco-ass.png)
 
 You may find more details in Alfresco Premier Services blog post:
 - [Solr monitoring using Nagios and alikes](https://community.alfresco.com/blogs/alfresco-premier-services/2018/08/08/solr-monitoring-using-nagios-and-alikes)
 
-## Using Docker
+## Using Docker template
 
-You can check this basic Nagios/Icinga setup using Docker in Ubuntu 16.04 LTS. It includes a template for using it in Alfresco Enterprise via check_jmx, and also in Alfresco Community via OOTB Support Tools webscripts and JMXProxy. You need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and JMXProxy in Alfresco Community targets. 
+You can check this basic Nagios/Icinga setup using Docker. Previously, you may need to enable JMX in Alfresco Enterprise, and to install OOTB Support Tools addon and to enable JMXProxy servlet in Alfresco Community setups.
 
 0. Clone this project
 ```
 $ git clone https://github.com/zylklab/alfresco-nagios
 $ cd alfresco-nagios
 ```
-
-1. Configure Alfresco templates in docker-compose.yml file according to your Alfresco repository targets to monitor.
+1. Configure Alfresco template in docker-compose.yml file according to your Alfresco repository target and mode to monitor.
 
 ```
 version: '3.1'
@@ -118,27 +90,21 @@ services:
     environment:
       - MODE=CE
       - ALF_HOST=alfresco5ce.zylk.net
-      - ALF_PORT=8080 
-      - ALF_USER=${ALF_USER} 
+      - ALF_PORT=8080
+      - ALF_USER=${ALF_USER}
       - ALF_PASS=${ALF_PASSWORD}
       - JMXPROXY_USER=${JMXPROXY_USER}
       - JMXPROXY_PASS=${JMXPROXY_PASS}    
-      - JMX_USER=${JMX_USER}
-      - JMX_PASS=${JMX_PASS} 
       - ASS_HOST=solr6ce.zylk.net
-      - ASS_PORT=8983 
+      - ASS_PORT=8983
 
       #- MODE=EE
       #- ALF_HOST=alfresco5ee.zylk.net
-      #- ALF_PORT=8080 
-      #- ALF_USER=${ALF_USER} 
-      #- ALF_PASS=${ALF_PASSWORD}
-      #- JMXPROXY_USER=${JMXPROXY_USER}
-      #- JMXPROXY_PASS=${JMXPROXY_PASS}    
+      #- ALF_PORT=8080
       #- JMX_USER=${JMX_USER}
-      #- JMX_PASS=${JMX_PASS} 
+      #- JMX_PASS=${JMX_PASS}
       #- ASS_HOST=solr6ee.zylk.net
-      #- ASS_PORT=8983 
+      #- ASS_PORT=8983
 
     extra_hosts:
       - "alfresco5ce.zylk.net:192.168.1.100"
@@ -147,53 +113,35 @@ services:
       #- "solr6ee.zylk.net:192.168.1.201"
 ```
 
-2. Fire the Icinga container up throught docker-compose
+2. Fire the Icinga container via docker-compose
 
 ```
 $ docker-compose up
 ```
 
-3. Login to Icinga
+3. Icinga login
 
-To access Icinga, point your browser to your docker Host ip (probably locahost) at port 8888, like `http://localhost:8888/icinga` . Note that you can change the port mapping in docker-compose.yml file also
+To access Icinga, point your browser to your docker host IP (probably locahost) at port 8888, with icingaadmin/admin credentials. Note that you can change the port mapping in docker-compose.yml file too.
 
 ```
-http://<docker-host-ip>:8888/icinga 
+http://localhost:8888/icinga
 ```
-Credentials: icingaadmin/admin 
 
 Note: Take into consideration that email alerts are not configured. You should configure postfix and Icinga/Nagios contacts.
 
-## Using Vagrantfile
-
-Other way of testing this setup is via Vagrantfile. This creates a Virtualbox VM based on Ubuntu 14.04 LTS and it provisions the needed Icinga installation and configuration. The template variables for the Alfresco targets are included in scripts/icinga-provision-script.sh  
-
-```
-$ git clone https://github.com/zylklab/alfresco-nagios
-$ cd alfresco-nagios
-# Edit scripts/icinga-provision-script.sh for setting Alfresco target vars
-$ vagrant up
-$ vagrant ssh
-# Once you finish you may exit VM, vagrant halt (or even vagrant destroy -f)
-```
-
-Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) with icingaadmin/admin credentials
-
 ## Tested on
 
-- Alfresco 2017XXGA + OOTB Support Tools Addon >0.1
-- Alfresco 5.0.25 EE 
-- Nagios/Icinga 3 
+- Alfresco 201707GA + OOTB Support Tools Addon>0.1
+- Alfresco 5.0.25 EE, 5.2.3 EE, 5.2.4 EE
+- Nagios/Icinga 3
 - PNP4Nagios 0.6.0
 - Docker version 1.12.6
-- Vagrant 1.8.1 
 - Ubuntu 14.04 LTS
 
 ## Contributors
 
 - [Cesar Capillas](http://github.com/CesarCapillas)
 - [Mikel Asla](http://github.com/mikelasla)
-
 
 ## Links
 
