@@ -38,7 +38,7 @@ For consuming OOTB webscripts, you need to create a dedicated user for Alfresco 
 
 Previously you need to install [OOTB Support Tools addon](https://github.com/OrderOfTheBee/ootbee-support-tools) in your Alfresco CE server.
 
-The ALF_USER and ALF_PASS are needed in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
+The ALF_USER and ALF_PASS variables are needed in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
 
 ### JMXProxy servlet (legacy)
 
@@ -46,13 +46,16 @@ The ALF_USER and ALF_PASS are needed in docker-compose.yml template file for Alf
 
 For illustrating this, we will monitor the number of opened file descriptors in the operating system. It is also an alternative to [Jolokia](https://jolokia.org/tutorial.html) or check_jmx methods.
 
-The JMXPROXY_USER and JMXPROXY_PASS in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
+The JMXPROXY_USER and JMXPROXY_PASS variables are needed in docker-compose.yml template file for Alfresco Community mode MODE=CE. These variables are not needed in the EE mode.
 
 ## Nagios-Icinga configuration for Alfresco Enterprise
 
 This set up needs JMX enabled Alfresco Server. For enabling JMX, you can check [Alfresco docs](https://docs.alfresco.com/5.0/tasks/jmx-access.html)
 
 ![Nagios Alfresco](images/alf-jmx-nagios.png)
+
+
+The JMX_USER and JMX_PASS variables are needed in docker-compose.yml template file for Alfresco Enterprise mode MODE=EE. These variables are not needed in the CE mode.
 
 ## Alfresco Search Services
 
