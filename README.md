@@ -103,23 +103,48 @@ $ cd alfresco-nagios
 1. Configure Alfresco templates in docker-compose.yml file according to your Alfresco repository targets to monitor.
 
 ```
+version: '3.1'
+
+networks:
+  monitoring:
+
+services:
+  icinga.zylk.net:
+    build: .
+    networks:
+      monitoring:
+    ports:
+      - 8888:80
     environment:
-      - ALF_HOST=alfresco5.zylk.net
+      - MODE=CE
+      - ALF_HOST=alfresco5ce.zylk.net
       - ALF_PORT=8080 
       - ALF_USER=${ALF_USER} 
       - ALF_PASS=${ALF_PASSWORD}
       - JMXPROXY_USER=${JMXPROXY_USER}
-      - JMXPROXY_PASS=${JMXPROXY_PASS}
-      - ACS_HOST=alfresco6.zylk.net
-      - ACS_PORT=8080
+      - JMXPROXY_PASS=${JMXPROXY_PASS}    
       - JMX_USER=${JMX_USER}
       - JMX_PASS=${JMX_PASS} 
-      - ASS_HOST=solr6.zylk.net
+      - ASS_HOST=solr6ce.zylk.net
       - ASS_PORT=8983 
+
+      #- MODE=EE
+      #- ALF_HOST=alfresco5ee.zylk.net
+      #- ALF_PORT=8080 
+      #- ALF_USER=${ALF_USER} 
+      #- ALF_PASS=${ALF_PASSWORD}
+      #- JMXPROXY_USER=${JMXPROXY_USER}
+      #- JMXPROXY_PASS=${JMXPROXY_PASS}    
+      #- JMX_USER=${JMX_USER}
+      #- JMX_PASS=${JMX_PASS} 
+      #- ASS_HOST=solr6ee.zylk.net
+      #- ASS_PORT=8983 
+
     extra_hosts:
-      - "alfresco5.zylk.net:192.168.1.100"
-      - "alfresco6.zylk.net:192.168.1.101"
-      - "solr6.zylk.net:192.168.1.102"
+      - "alfresco5ce.zylk.net:192.168.1.100"
+      - "solr6ce.zylk.net:192.168.1.101"
+      #- "alfresco5ee.zylk.net:192.168.1.200"
+      #- "solr6ee.zylk.net:192.168.1.201"
 ```
 
 2. Fire the Icinga container up throught docker-compose
@@ -167,7 +192,8 @@ Then login in http://vagrant-server-ip/icinga (or http://localhost:8080/icinga) 
 ## Contributors
 
 - [Cesar Capillas](http://github.com/CesarCapillas)
-- [Mikel Asla](https://github.com/mikelasla)
+- [Mikel Asla](http://github.com/mikelasla)
+
 
 ## Links
 
